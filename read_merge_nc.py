@@ -59,6 +59,31 @@ def merge_nc(files):
 
     return dfs
 
+def merge_df(frames):
+    """
+        --> Bu fonksiyonun amacı birden fazla aynı türdeki verinin (ALES, LRM)
+        dataframelerinin birleştirilmesidir.
+        --> Farklı veriler bir liste halinde girilmelidir.
+
+        input: liste
+        output: dataframe
+    """
+    frames = [ ]
+    result = pd.concat(frames)
+    return result
+
+def filter_ales(df):
+    """
+        --> Bu fonksiyonun amacı ALES verileri için verilen kısıtlamaların veriye uygulanmasıdır.
+
+        input: dataframe
+        output: dataframe
+    """
+    df_result = df[df["distance.00"] > 3]
+    df_result = df_result[df["swh.05"] < 11]
+    df_result = df_result[df["stdalt.05"] < 0.20]
+    return df_result
+
 #Verilerin aylık ve yıllık olarak elde edilmesi
 
 def aylik(df):
@@ -159,3 +184,4 @@ def yuks_time_son_degerler(df):
         """
     yeni_df = df.iloc[df.index == 20]
     return yeni_df
+

@@ -15,8 +15,10 @@ from matplotlib.dates import DayLocator, HourLocator, DateFormatter, drange, Mon
 import statsmodels
 import matplotlib.dates as dates
 from sklearn.metrics import mean_squared_error
+import plotly.express as px
+import plotly.graph_objects as go
 
-#HER AYRI PLOT BAŞLIĞI İÇİN FONKSİYONLARA TİTLE KOMUTLARI YAZILACAK
+#PLOTLARIN ÇİZİMİ
 
 def plot_ssh(df, title):
     """
@@ -67,7 +69,7 @@ def plot_ssh(df, title):
     mse_mm = "%.2f" % mse_mm
 
     #Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2007, 6, 1), 24, f"Trend: {ort_ssh} m ± {mse_mm} mm")
+    plt.text(datetime.date(2002, 6, 1), 27, f"Trend: {ort_ssh} m ± {mse_mm} mm")
 
     plt.title(title)
     ax.legend(loc="best")
@@ -114,7 +116,7 @@ def plot_ssh_yillik(df, title):
     mse_mm = "%.2f" % mse_mm
 
     #Trend değerlerinin plota yazdırılması
-    plt.text(2002, 25.15, f"Trend: {ort_ssh} m ± {mse_mm} mm")
+    plt.text(2016.7, 23.5, f"Trend: {ort_ssh} m ± {mse_mm} mm")
 
     plt.title(title)
     plt.legend(loc = "best")
@@ -134,6 +136,9 @@ def plot_ssh_aylik(df, title):
     # Ardından dfx çizdirilirken sorun verdiği için dff diye yeni bir dataframe e kopyalanır
     dff = dfx
 
+    #Nan değerlerinin alınmaması
+    dff = dff[dff["ssh.55"].notna()]
+
     #Plotun çizdirilmesi
     fig, ax = plt.subplots()
     ax.plot_date(dff["cdate_t"], dff["ssh.55"], "royalblue", label="Deniz Seviyesi Yüksekliği")
@@ -144,7 +149,7 @@ def plot_ssh_aylik(df, title):
     ax.plot_date(dff["cdate_t"], dff["EWMA3"], "red", label="Kayan Ortalama")
 
     #Year-Month bilgileri için MonthLocator kullanılmalı
-    ax.xaxis.set_major_locator(MonthLocator(interval = 6))
+    ax.xaxis.set_major_locator(MonthLocator(interval = 18))
     #Burada ise verinin veri tipinin formatı girilmeli
     ax.fmt_xdata = DateFormatter('% Y-% m-% d')
 
@@ -169,7 +174,7 @@ def plot_ssh_aylik(df, title):
     mse_mm = "%.2f" % mse_mm
 
     #Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2001, 12, 1), 24.55, f"Trend: {ort_ssh} m ± {mse_mm} mm")
+    plt.text(datetime.date(2017, 1, 1), 22.7, f"Trend: {ort_ssh} m ± {mse_mm} mm")
 
     ax.set_xlabel("Tarih", fontsize=13)
     ax.set_ylabel("Ortalama Aylık Deniz Seviyesi Yüksekliği (m)", fontsize=13)
@@ -177,9 +182,4 @@ def plot_ssh_aylik(df, title):
     plt.grid(True)
     plt.title(title)
     plt.show()
-
-
-
-
-
 

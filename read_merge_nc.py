@@ -57,6 +57,8 @@ def merge_nc(files):
 
     dfs["cdate_t"] = pd.to_datetime(dfs["cdate_t"])
 
+    dfs["sla"] = (dfs["ssh.55"] - dfs["mssh.05"])  #metre biriminde
+
     return dfs
 
 def merge_df(frames):
@@ -68,20 +70,34 @@ def merge_df(frames):
         input: liste
         output: dataframe
     """
-    frames = [ ]
     result = pd.concat(frames)
+    result = result.sort_values(by="cdate_t", ascending=True)
     return result
 
-def filter_ales(df):
+def filter_ales_05(df):
     """
         --> Bu fonksiyonun amacı ALES verileri için verilen kısıtlamaların veriye uygulanmasıdır.
+        --> 05 uzantılı columnlar için geçerlidir (jason1, jason2 vb).
 
         input: dataframe
         output: dataframe
     """
     df_result = df[df["distance.00"] > 3]
-    df_result = df_result[df["swh.05"] < 11]
-    df_result = df_result[df["stdalt.05"] < 0.20]
+    df_result = df_result[df_result["swh.05"] < 11]
+    df_result = df_result[df_result["stdalt.05"] < 0.20]
+    return df_result
+
+def filter_ales_06(df):
+    """
+        --> Bu fonksiyonun amacı ALES verileri için verilen kısıtlamaların veriye uygulanmasıdır.
+        --> 06 uzantılı columnlar için geçerlidir (sentinel).
+
+        input: dataframe
+        output: dataframe
+    """
+    df_result = df[df["distance.00"] > 3]
+    #df_result = df_result[df_result["swh.06"] < 11]    --> sentinel verilerinde swh genelde Nan
+    df_result = df_result[df_result["stdalt.06"] < 0.20]
     return df_result
 
 #Verilerin aylık ve yıllık olarak elde edilmesi
@@ -115,7 +131,7 @@ def yillik(df):
 #Dataframe olan dosyalardan istenilen indexteki verilerin çekilmesi.
 #Not: alc = alçalan yörünge, yuks = yükselen yörünge
 
-def alc_time_ilk_degerleri(df):
+def alc_time_ilk_degerler(df):
     """
         --> Bu fonksiyonun amacı elde bulunan herhangi bir ALES verisinin time indexinin 0 olduğu
     değerlerinin alınmasıdır.
@@ -132,7 +148,7 @@ def alc_time_ilk_degerleri(df):
     yeni_df = df.iloc[df.index == 0]
     return yeni_df
 
-def alc_time_son_degerleri(df):
+def alc_time_son_degerler(df):
     """
         --> Bu fonksiyonun amacı elde bulunan herhangi bir ALES verisinin time indexinin son olduğu
     değerlerinin alınmasıdır.
@@ -147,7 +163,7 @@ def alc_time_son_degerleri(df):
         input: dataframe
         output: dataframe
     """
-    yeni_df = df.iloc[df.index == 20]
+    yeni_df = df.iloc[df.index == 1]
     return yeni_df
 
 def yuks_time_ilk_degerler(df):
@@ -164,7 +180,7 @@ def yuks_time_ilk_degerler(df):
         input: dataframe
         output: dataframe
     """
-    yeni_df = df.iloc[df.index == 0]
+    yeni_df = df.iloc[df.index == 2]
     return yeni_df
 
 def yuks_time_son_degerler(df):
@@ -182,6 +198,33 @@ def yuks_time_son_degerler(df):
         input: dataframe
         output: dataframe
         """
-    yeni_df = df.iloc[df.index == 20]
+    yeni_df = df.iloc[df.index == 8]
     return yeni_df
+
+def ort_sla_hesapla(df):
+
+    a = df["sla"].mean()
+    return a
+
+def distance_filter(df):
+    """
+        --> Bu fonkisyonun amacı karmakarışık olan ölçülerin filtrelenerek minimum değerlerinin alınması.
+
+        input: df
+        output: df
+    """
+
+    df_result = df[df["distance.00"] > 3]
+    df_result = df[df["distance.00"] < 12]
+    return df_result
+
+
+
+
+
+
+
+
+
+
 

@@ -11,6 +11,7 @@ import juliandate as jd
 from datetime import datetime
 import math as m
 from dateutil.relativedelta import relativedelta
+import openpyxl
 
 #Dosyaların okunarak dataframe haline getirilmesi
 
@@ -506,6 +507,46 @@ def mean_square_aylik_lrm(df):
     mse = mse / differences_in_years #m
     mse = mse * 1000 #mm
     return mse
+
+def filter_ales_05_marmaris(df):
+    """
+        --> Bu fonksiyonun amacı ALES verileri için verilen kısıtlamaların veriye uygulanmasıdır.
+        --> 05 uzantılı columnlar için geçerlidir (jason1, jason2 vb).
+        --> MARMARİSTE STANDART SAPMALAR ÇOK YÜKSEK OLDUĞU İÇİN VERİLERDEN ÇIKARILARAK SONUÇ ELDE EDİLDİ.
+
+        input: dataframe
+        output: dataframe
+    """
+    df_result = df[df["distance.00"] > 3]
+    df_result = df_result[df_result["swh.05"] < 11]
+    df_result = df_result[df_result["stdalt.05"] < 0.20]
+    return df_result
+
+def df2excel(df):
+    """
+        --> Bu fonksiyonun amacı herhangi bir dataframein excel tablosuna aktarılmasının sağlanmasıdır.
+        input: dataframe
+        output: excel table
+    """
+
+    table = df.to_excel("/home/furkan/deus/output.xlsx", sheet_name = "Sheet_1", engine='openpyxl')
+    return table
+
+def ales_data_merge(name, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11):
+    """
+        --> Bu fonksiyon tüm ales verilerinin birleştirilmesinde kullanılır.
+        --> Seçilen ales verilerini içerir.
+        input: liste
+        output: excel table
+    """
+
+    #İlk olarak tüm veriler birleştirilecek
+    df_list = [x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11]
+    merge_df = pd.concat(df_list)
+
+    #Excel tablosuna aktarılması
+    table = merge_df.to_excel(name, sheet_name = "Sheet_1", engine = "openpyxl")
+    return table
 
 
 

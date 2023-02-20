@@ -73,7 +73,7 @@ def plot_ssh_gunluk(df, title):
     mse = "%.2f" % mse
 
     #Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2004, 6, 1), 37.56, f"Trend: {ort_ssh} m ± {mse} mm/yıl")
+    plt.text(datetime.date(2008, 1, 1), 19.03, f"Trend: {ort_ssh} m ± {mse} mm/yıl")
 
     plt.title(title)
     ax.legend(loc="best")
@@ -126,7 +126,7 @@ def plot_ssh_aylik(df, title):
     mse = "%.2f" % mse
 
     #Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2004, 6, 1), 37.56, f"Trend: {ort_ssh} m ± {mse} mm/yıl")
+    plt.text(datetime.date(2017, 12, 1), 21.53, f"Trend: {ort_ssh} m ± {mse} mm/yıl")
 
     # Year-Month bilgileri için MonthLocator kullanılmalı
     ax.xaxis.set_major_locator(MonthLocator(interval=36))
@@ -231,7 +231,7 @@ def plot_sla_gunluk(df, title):
     mse = "%.2f" % mse
 
     # Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2004, 6, 1), -0.38, f"Trend: {ort_sla} m ± {mse} mm/yıl")
+    plt.text(datetime.date(2008, 1, 1), -2.96, f"Trend: {ort_sla} m ± {mse} mm/yıl")
 
     #Geriye kalan bilgiler. Bu kodun bitimi ile ssh plotu çizimi biter.
     ax.set_xlabel("Yıl", fontsize=13)
@@ -293,7 +293,7 @@ def plot_sla_aylik(df, title):
     mse = "%.2f" % mse
 
     # Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2004, 1, 1), -0.18, f"Trend: {ort_sla} m ± {mse} mm/yıl")
+    plt.text(datetime.date(2008, 1, 1), -0.96, f"Trend: {ort_sla} m ± {mse} mm/yıl")
 
     ax.set_xlabel("Tarih", fontsize=13)
     ax.set_ylabel("Ortalama Aylık Deniz Seviyesi Anomalisi (m)", fontsize=13)
@@ -374,7 +374,7 @@ def sla_gunluk(df, title):
     mse = "%.2f" % mse
 
     # Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2019, 1, 1), -0.44, f"Trend: {ort_sla} m ± {mse} mm/yıl")
+    plt.text(datetime.date(2008, 1, 1), -0.33, f"Trend: {ort_sla} m ± {mse} mm/yıl")
 
     #Geriye kalan bilgiler. Bu kodun bitimi ile ssh plotu çizimi biter.
     ax.set_xlabel("Yıl", fontsize=13)
@@ -436,7 +436,7 @@ def sla_aylik(df, title):
     mse = "%.2f" % mse
 
     # Trend değerlerinin plota yazdırılması
-    plt.text(datetime.date(2002, 1, 1), -0.18, f"Trend: {ort_sla} m ± {mse} mm/yıl")
+    plt.text(datetime.date(2019, 1, 1), -0.23, f"Trend: {ort_sla} m ± {mse} mm/yıl")
 
     ax.set_xlabel("Tarih", fontsize=13)
     ax.set_ylabel("Ortalama Aylık Deniz Seviyesi Anomalisi (m)", fontsize=13)
@@ -514,8 +514,8 @@ def iki_df_sla_plot(df1, df2, title, mod):
         mse_ales = "%.2f" % mse_ales
 
         # Ortalama değerlerinin plota yazdırılması
-        plt.text(datetime.date(2017, 1, 1), -0.54, f"LRM/SAR/SARIN Trend: {ort_ssh_lrm} m ± {mse_lrm} mm/yıl")
-        plt.text(datetime.date(2017, 1, 1), -0.58, f"ALES Trend: {ort_ssh_ales} m ± {mse_ales} mm/yıl")
+        plt.text(datetime.date(2008, 6, 1), -2.56, f"LRM/SAR/SARIN Trend: {ort_ssh_lrm} m ± {mse_lrm} mm/yıl")
+        plt.text(datetime.date(2008, 6, 1), -3.04, f"ALES Trend: {ort_ssh_ales} m ± {mse_ales} mm/yıl")
 
         plt.title(title)
         ax.legend(loc="best")
@@ -568,8 +568,8 @@ def iki_df_sla_plot(df1, df2, title, mod):
         plt.title(title)
 
         # Ortalama değerlerinin plota yazdırılması
-        plt.text(datetime.date(2017, 6, 1), -0.37, f"LRM/SAR/SARIN Trend: {ort_ssh_lrm} m ± {mse_lrm} mm/yıl")
-        plt.text(datetime.date(2017, 6, 1), -0.42, f"ALES Trend: {ort_ssh_ales} m ± {mse_ales} mm/yıl")
+        plt.text(datetime.date(2008, 6, 1), -0.87, f"LRM/SAR/SARIN Trend: {ort_ssh_lrm} m ± {mse_lrm} mm/yıl")
+        plt.text(datetime.date(2008, 6, 1), -0.94, f"ALES Trend: {ort_ssh_ales} m ± {mse_ales} mm/yıl")
 
         plt.show()
 

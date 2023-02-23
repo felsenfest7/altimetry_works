@@ -12,6 +12,9 @@ from datetime import datetime
 import math as m
 from dateutil.relativedelta import relativedelta
 import openpyxl
+import geopy.distance
+import mpu
+from typing import Tuple
 
 #Dosyaların okunarak dataframe haline getirilmesi
 
@@ -213,7 +216,7 @@ def distance_filter(df):
     """
 
     df_result = df[df["distance.00"] > 3]
-    df_result = df[df["distance.00"] < 12]
+    df_result = df_result[df_result["distance.00"] < 12]
     return df_result
 
 def igneada_icin(df):
@@ -354,8 +357,8 @@ def ales_sla_filter(df):
     :param df:
     :return:
         """
-    df_result = df[df["sla"] < 0.7]
-    df_result = df_result[df_result["sla"] > -0.7]
+    df_result = df[df["sla"] < 0.6]
+    df_result = df_result[df_result["sla"] > -0.6]
     return df_result
 
 def lrm_sla_filter(df):
@@ -547,6 +550,103 @@ def ales_data_merge(name, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11):
     #Excel tablosuna aktarılması
     table = merge_df.to_excel(name, sheet_name = "Sheet_1", engine = "openpyxl")
     return table
+
+def df2excel(df, mode, station_name, station_name_mode):
+
+    """
+        --> Herhangi bir dataframe'in excele çevrilmesini sağlar.
+        --> Mod ve station name bilgileri verinin pathi için gereklidir.
+
+        input: df
+        output: excel table
+    """
+
+    path = f"/home/furkan/deus/ALTIMETRY/processler/{mode}/{station_name}/REVİZE/{station_name_mode}.xlsx"
+    table = df.to_excel(path)
+    return table
+
+def ort_koord(frames):
+
+    """
+        --> Ortalama koordinat hesabına yarar.
+        --> Hesaba katılacak veriler liste halinde girilmeli (frames).
+
+        input: liste
+        output: point (2D)
+    """
+
+    result = pd.concat(frames)
+    result = result.sort_values(by="cdate_t", ascending=True)
+
+    ort_lat = result["glat.00"].mean()
+    ort_lon = result["glon.00"].mean()
+
+    return ort_lat, ort_lon
+
+def agirlik_hesabi(df, enlem, boylam):
+    """
+        --> Ağrlık hesabını sağlayan bir fonksiyondur.
+        --> İki farklı moda ait veriler ayrı ayrı sokularak hesaplamalar yapılır.
+        --> Enlem ve boylam ortalama koordinatlara ait değerlerdir.
+
+        input: df's
+        output: df's
+    """
+
+    #Şimdi burada koordinatlar arasındaki mesafe hesabını yaparken her ne kadar verilerin T/P
+    #elipsoidinde olduğunu bilsekte T/P ile WGS84 arasındaki farkın az olduğunu biliyoruz.
+    #Bundan dolayı da aşağıda kullandığım fonksiyonun kullanılması ile mesafelerde sorun olmadan
+    #hesap yapabilirim.
+
+    ort_koordinatlar = (enlem, boylam)
+
+    df["distance2ort"] = df.apply(lambda row: geopy.distance.distance((row["glat.00"], row["glon.00"]), ort_koordinatlar).km, axis=1)
+
+    #Ağırlık hesabı
+    ortalama_distance = df["distance2ort"].mean()
+    df["weight"] = ortalama_distance / df["distance2ort"] #birimsiz
+
+    return df
+
+def idw(df):
+
+    """
+        --> IDW hesabı yapmayı sağlar.
+        --> IDW hesabı yapılacak dataframe girilmeli.
+
+        input: df
+        output: series
+    """
+
+    #Veri tarihine göre düzenlenir
+    df['month_year'] = df['cdate_t'].dt.to_period('M')
+
+    #Diğer düzeltmeler
+    dx = df[["cdate_t", "glat.00", "glon.00", "ssh.55", "mssh.05", "weight", "month_year"]].copy()
+    dx.reset_index(inplace = True)
+    dx.drop(["time"], axis = 1, inplace = True)
+    dx.set_index("month_year", inplace = True)
+
+    #IDW ve diğer değerlerin hesabı
+    dx["ssh_idw"] = dx.groupby("month_year").apply(lambda df: (df["ssh.55"] * df["weight"]).sum() / df["weight"].sum())
+    dx["ssh.55"] = dx.groupby("month_year").apply(lambda df: df["ssh.55"].mean())
+    dx["glat.00"] = dx.groupby("month_year").apply(lambda df: df["glat.00"].mean())
+    dx["glon.00"] = dx.groupby("month_year").apply(lambda df: df["glon.00"].mean())
+    dx["cdate_t"] = dx.groupby("month_year").apply(lambda df: df["cdate_t"].mean())
+    dx["mssh05_idw"] = dx.groupby("month_year").apply(lambda df: (df["mssh.05"] * df["weight"]).sum() / df["weight"].sum())
+
+    dx.reset_index(inplace = True)
+    dx.drop_duplicates(subset = "month_year", keep = "first", inplace= True)
+    dx.reset_index(inplace=True)
+    dx.drop(["index"], axis=1, inplace=True)
+    dx.drop(["month_year"], axis=1, inplace=True)
+    return dx
+
+
+
+
+
+
 
 
 
